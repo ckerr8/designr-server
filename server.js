@@ -17,7 +17,6 @@ app.use("/clients", clientsRoutes);
 app.use("/tasks", tasksRoutes);
 app.use("/assets", assetsRoutes);
 
-// create API endpoint with POST request
 app.get("/", (_req, res) => {
 	res.send("Welcome to Instock API");
 });

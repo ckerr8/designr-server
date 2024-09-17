@@ -1,15 +1,15 @@
-// // import { getAllClients } from '../controllers/client-controller';
-// import express from 'express';
+// import { getAllProjects } from '../controllers/client-controller';
+import express from 'express';
+import * as ProjectsController from '../controllers/projects-controller.js'; 
+const router = express.Router();
 
-// const router = express.Router();
+// Middleware to handle errors
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
 
-// // Middleware to handle errors
-// const asyncHandler = (fn) => (req, res, next) =>
-//   Promise.resolve(fn(req, res, next)).catch(next);
-
-// router
-//     .route('/projects')
-//     .get(getAllProjects)
+router
+    .route('/')
+    .get(asyncHandler(ProjectsController.getAllProjects));
 //     .post(validateProject, createProject);
 
 // router
@@ -18,4 +18,4 @@
 //     .put(validateProject, updateProject)
 //     .delete(deleteProject);
 
-//     export default router;
+    export default router;

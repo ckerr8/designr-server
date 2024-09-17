@@ -3,6 +3,9 @@ import express from 'express'
 import "dotenv/config";
 import cors from "cors";
 import clientsRoutes from "./routes/clients-routes.js";
+import projectsRoutes from "./routes/projects-routes.js";
+import tasksRoutes from "./routes/tasks-routes.js"
+import assetsRoutes from "./routes/assets-routes.js"
 const app = express();
 
 
@@ -13,12 +16,12 @@ app.use(cors());
 
 
 app.use("/clients", clientsRoutes);
-// app.use("/projects", projectRoutes);
-// app.use("/tasks", tasksRoutes);
-// app.use("/assets", assetsRoutes);
+app.use("/projects", projectsRoutes);
+app.use("/tasks", tasksRoutes);
+app.use("/assets", assetsRoutes);
 
 app.get("/", (_req, res) => {
-	res.send("Welcome to Instock API");
+	res.send("Welcome to Designr API");
 });
 
 // start Express on port 8080

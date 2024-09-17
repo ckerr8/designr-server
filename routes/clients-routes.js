@@ -8,8 +8,8 @@ const asyncHandler = (fn) => (req, res, next) =>
 
 // Client routes
 router.route('/')
-  .get(asyncHandler(ClientsController.getAllClients));
-  // .post(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.createClient));
+  .get(asyncHandler(ClientsController.getAllClients))
+  .post(asyncHandler(ClientsController.createClient));
 
 // router.route('/:id')
 //   .get(asyncHandler(ClientsController.getClientById))

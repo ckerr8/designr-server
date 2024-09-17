@@ -21,12 +21,15 @@ export const getAllClients = async (req, res) => {
 //     getAllClients
 //   };
   
-//   export const createClient = async (req, res) => {
-//     try {
-//       const id = uuid();
-//       const newClient = await knex('clients').where({ key: newId }).first();
-//       res.status(201).json(newClient);
-//     } catch (err) {
-//       handleServerError(res, err, 'Unable to create new client');
-//     }
-//   };
+  export const createClient = async (req, res) => {
+    try {
+        const [newId] = await knex('clients').insert({
+            ...req.body,
+            id: uuid()
+    });
+        const newClient = await knex("clients").where({ id: newId });
+      res.status(201).json(newClient);
+    } catch (err) {
+      handleServerError(res, err, 'Unable to create new client');
+    }
+  };

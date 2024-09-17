@@ -8,12 +8,12 @@ const asyncHandler = (fn) => (req, res, next) =>
 router
 .route('/')
   .get(asyncHandler(AssetsController.getAllAssets));
-//   .post(validateDesignAsset, createDesignAsset);
+//   .post(validateAsset, createAsset);
 
 // router
 // .route('/design-assets/:id')
-//   .get(getDesignAssetById)
-//   .put(validateDesignAsset, updateDesignAsset)
-//   .delete(deleteDesignAsset);
+//   .get(getAssetById)
+//   .put(validateAsset, updateAsset)
+//   .delete(deleteAsset);
   
   export default router;

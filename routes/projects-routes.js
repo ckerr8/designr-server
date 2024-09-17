@@ -9,7 +9,8 @@ const asyncHandler = (fn) => (req, res, next) =>
 
 router
     .route('/')
-    .get(asyncHandler(ProjectsController.getAllProjects));
+    .get(asyncHandler(ProjectsController.getAllProjects))
+    .post(asyncHandler(ProjectsController.createProject));
 //     .post(validateProject, createProject);
 
 // router

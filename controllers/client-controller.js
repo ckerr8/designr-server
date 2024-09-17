@@ -9,7 +9,8 @@ const knex = initKnex(configuration);
 
 export const getAllClients = async (req, res) => {
     try {
-      const clients = await knex('clients').select('*');
+      const clients = await knex('clients')
+      .select('*');
       res.json(clients);
     } catch (err) {
       handleServerError(res, err, 'Error fetching clients');
@@ -24,4 +25,9 @@ export const getAllClients = async (req, res) => {
     } catch (err) {
       handleServerError(res, err, 'Unable to create new client');
     }
+  };
+  
+  export {
+    getAllClients,
+
   };

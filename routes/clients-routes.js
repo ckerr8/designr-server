@@ -11,8 +11,8 @@ router.route('/')
   .get(asyncHandler(ClientsController.getAllClients))
   .post(asyncHandler(ClientsController.createClient));
 
-// router.route('/:id')
-//   .get(asyncHandler(ClientsController.getClientById))
+router.route('/:id')
+  .get(asyncHandler(ClientsController.getClient))
 //   .put(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.updateClient))
 //   .delete(asyncHandler(ClientsController.deleteClient));
 

@@ -17,10 +17,21 @@ export const getAllClients = async (req, res) => {
     }
   };
   
-//   export {
-//     getAllClients
-//   };
-  
+  export const getClient = async (req, res) => {
+    try {
+        const client = await knex('clients')
+        .where({ id: req.params.id}).first();
+        if (!client) {
+            return res.status(404).json({
+                messsage:`Video with Id ${req.params.id} not found`
+            })
+        }
+        res.json(client);
+    } catch(error) {
+        res.status(500).send(`Error retrieving client: ${error}`)
+    }
+  };
+
   export const createClient = async (req, res) => {
     try {
         const [newId] = await knex('clients').insert({

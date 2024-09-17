@@ -1,5 +1,5 @@
 import express from 'express';
-
+import * as ClientsController from '../controllers/client-controller.js'
 const router = express.Router();
 
 // Middleware to handle errors
@@ -7,12 +7,13 @@ const asyncHandler = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
 // Client routes
-router.route('/clients')
-  .get(getAllClients)
-  .post(validateClient, createClient);
+router.route('/')
+  .get(asyncHandler(ClientsController.getAllClients));
+  // .post(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.createClient));
 
-router.route('/clients/:id')
-  .get(getClientById)
-  .put(validateClient, updateClient)
-  .delete(deleteClient);
-  export default router;
+// router.route('/:id')
+//   .get(asyncHandler(ClientsController.getClientById))
+//   .put(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.updateClient))
+//   .delete(asyncHandler(ClientsController.deleteClient));
+
+export default router;

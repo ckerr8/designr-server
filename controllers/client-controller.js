@@ -17,17 +17,16 @@ export const getAllClients = async (req, res) => {
     }
   };
   
-  export const createClient = async (req, res) => {
-    try {
-      const id = uuid();
-      const newClient = await knex('clients').where({ key: newId }).first();
-      res.status(201).json(newClient);
-    } catch (err) {
-      handleServerError(res, err, 'Unable to create new client');
-    }
-  };
+//   export {
+//     getAllClients
+//   };
   
-  export {
-    getAllClients,
-
-  };
+//   export const createClient = async (req, res) => {
+//     try {
+//       const id = uuid();
+//       const newClient = await knex('clients').where({ key: newId }).first();
+//       res.status(201).json(newClient);
+//     } catch (err) {
+//       handleServerError(res, err, 'Unable to create new client');
+//     }
+//   };

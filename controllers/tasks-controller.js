@@ -16,3 +16,16 @@ export const getAllTasks = async (req, res) => {
       handleServerError(res, err, 'Error fetching clients');
     }
   };
+
+  export const createTask = async (req, res) => {
+    try {
+        const [newId] = await knex('tasks').insert({
+            ...req.body,
+            id: uuid()
+    });
+        const newTask = await knex("tasks").where({ id: newId });
+      res.status(201).json(newTask);
+    } catch (err) {
+      console.error(res, err, 'Unable to create new task');
+    }
+  };

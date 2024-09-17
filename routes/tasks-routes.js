@@ -9,6 +9,7 @@ const asyncHandler = (fn) => (req, res, next) =>
 
 router.route('/')
   .get(TasksController.getAllTasks)
+  .post(TasksController.createTask);
 //   .post(validateTask, createTask);
 
 // router.route('/tasks/:id')

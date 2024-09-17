@@ -7,7 +7,8 @@ const asyncHandler = (fn) => (req, res, next) =>
 
 router
 .route('/')
-  .get(asyncHandler(AssetsController.getAllAssets));
+  .get(asyncHandler(AssetsController.getAllAssets))
+  .post(asyncHandler(AssetsController.createAsset));
 //   .post(validateAsset, createAsset);
 
 // router

@@ -91,6 +91,55 @@ export const getAllProjects = async (req, res) => {
       res.status(500).json({ error: 'Error fetching project with tasks' });
     }
   };
+
+  export const deleteProjectById = async (req, res) => {
+    const trx = await knex.transaction();
+  
+    try {
+      const { id } = req.params;
+  
+      // Check if the project exists
+      const project = await trx('projects')
+        .where({ id: id })
+        .first();
+  
+      if (!project) {
+        await trx.rollback();
+        return res.status(404).json({ message: `Project with Id ${id} not found` });
+      }
+  
+      // Fetch tasks associated with the project
+      const tasks = await trx('tasks')
+        .where({ projects_id: id })
+        .select('id');
+  
+      // Update assets associated with the project's tasks
+      for (const task of tasks) {
+        await trx('assets')
+          .where({ tasks_id: task.id })
+          .update({ status: 'Available', tasks_id: null });
+      }
+  
+      // Update tasks associated with the project
+      await trx('tasks')
+        .where({ projects_id: id })
+        .update({ projects_id: null, status: 'Unassigned' });
+  
+      // Delete the project
+      await trx('projects')
+        .where({ id: id })
+        .del();
+  
+      await trx.commit();
+  
+      res.status(200).json({ message: `Project with Id ${id} has been deleted successfully` });
+    } catch (error) {
+      await trx.rollback();
+      console.error('Error deleting project:', error);
+      res.status(500).json({ error: `Error deleting project: ${error.message}` });
+    }
+  };
+
 //   export {
 //     getAllClients
 //   };

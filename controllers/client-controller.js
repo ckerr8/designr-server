@@ -23,7 +23,7 @@ export const getAllClients = async (req, res) => {
         .where({ id: req.params.id}).first();
         if (!client) {
             return res.status(404).json({
-                messsage:`Video with Id ${req.params.id} not found`
+                messsage:`Client with Id ${req.params.id} not found`
             })
         }
         res.json(client);

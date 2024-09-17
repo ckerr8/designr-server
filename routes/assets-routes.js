@@ -11,10 +11,10 @@ router
   .post(asyncHandler(AssetsController.createAsset));
 //   .post(validateAsset, createAsset);
 
-// router
-// .route('/design-assets/:id')
-//   .get(getAssetById)
-//   .put(validateAsset, updateAsset)
-//   .delete(deleteAsset);
+router
+.route('/:id')
+  .get(AssetsController.getAssetById)
+//   .putAssetsController.validateAsset, AssetsController.updateAsset)
+//   .delete(AssetsController.deleteAsset);
   
   export default router;

@@ -13,8 +13,21 @@ export const getAllAssets = async (req, res) => {
       const assets = await knex('assets')
       .select('*');
       res.json(assets);
-    } catch (err) {
-      handleServerError(res, err, 'Error fetching assets');
+    } catch (error) {
+        res.status(500).send(`Error retrieving assets: ${error}`)
+    }
+  };
+
+  export const getAssetById = async (req, res) => {
+    try {
+        const asset = await knex('assets')
+        .where({ id: req.params.id}).first();
+        if (!asset) {
+            return res.status(404).json({ message:`Asset with Id ${req.params.id} not found`})
+        }
+        res.json(asset);
+    } catch  {
+        res.status(500).send(`Error retrieving asset: ${error}`)
     }
   };
 

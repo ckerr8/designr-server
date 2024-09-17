@@ -17,6 +17,23 @@ export const getAllProjects = async (req, res) => {
     }
   };
 
+  export const getProjectById = async (req, res) => {
+    try {
+        const project = await knex('projects')
+        .where({ id: req.params.id}).first();
+        if (!project) {
+            return res.status(404).json({
+            message: `Project with Id ${req.params.id} does not exist`
+            })
+        }
+    res.json(project);
+    } catch (error) {
+        return res.status(500).json({
+        messsage:`Error retrieving project with ID ${req.params.id}`
+        })
+    }
+};
+
   export const createProject = async (req, res) => {
     try {
       const projectData = { ...req.body };

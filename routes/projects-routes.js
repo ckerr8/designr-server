@@ -11,12 +11,11 @@ router
     .route('/')
     .get(asyncHandler(ProjectsController.getAllProjects))
     .post(asyncHandler(ProjectsController.createProject));
-//     .post(validateProject, createProject);
 
-// router
-//     .route('/projects/:id')
-//     .get(getProjectById)
-//     .put(validateProject, updateProject)
-//     .delete(deleteProject);
+router
+    .route('/:id')
+    .get(ProjectsController.getProjectById);
+//     .put(ProjectsController.validateProject, ProjectsController.updateProject)
+//     .delete(ProjectsController.deleteProject);
 
     export default router;

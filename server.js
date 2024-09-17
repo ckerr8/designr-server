@@ -4,8 +4,8 @@ import "dotenv/config";
 import cors from "cors";
 import clientsRoutes from "./routes/clients-routes.js";
 import projectsRoutes from "./routes/projects-routes.js";
-import tasksRoutes from "./routes/tasks-routes.js"
-import assetsRoutes from "./routes/assets-routes.js"
+import tasksRoutes from "./routes/tasks-routes.js";
+import assetsRoutes from "./routes/assets-routes.js";
 const app = express();
 
 

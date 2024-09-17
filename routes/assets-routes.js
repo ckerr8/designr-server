@@ -1,5 +1,5 @@
 import express from 'express';
-import * as AssetsController from "../controllers/assets-controller.js"
+import * as AssetsController from "../controllers/assets-controller.js";
 const router = express.Router();
 
 const asyncHandler = (fn) => (req, res, next) =>
@@ -7,7 +7,7 @@ const asyncHandler = (fn) => (req, res, next) =>
 
 router
 .route('/')
-  .get(asyncHandler(AssetsController.getAllDesignAssets));
+  .get(asyncHandler(AssetsController.getAllAssets));
 //   .post(validateDesignAsset, createDesignAsset);
 
 // router

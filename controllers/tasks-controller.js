@@ -17,6 +17,19 @@ export const getAllTasks = async (req, res) => {
     }
   };
 
+  export const getTaskById = async (req, res) => {
+    try {
+        const task = await knex('tasks')
+        .where({ id: req.params.id}).first();
+        if (!task) {
+            return res.status(404).json({ message:`Task with Id ${req.params.id} not found`})
+        }
+        res.json(task);
+    } catch (error) {
+        res.status(500).send(`Error retrieving tasks: ${error}`)
+    }
+  }
+
   export const createTask = async (req, res) => {
     try {
         const [newId] = await knex('tasks').insert({
@@ -25,7 +38,7 @@ export const getAllTasks = async (req, res) => {
     });
         const newTask = await knex("tasks").where({ id: newId });
       res.status(201).json(newTask);
-    } catch (err) {
+    } catch (error) {
       console.error(res, err, 'Unable to create new task');
     }
   };

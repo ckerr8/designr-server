@@ -12,9 +12,9 @@ router.route('/')
   .post(TasksController.createTask);
 //   .post(validateTask, createTask);
 
-// router.route('/tasks/:id')
-//   .get(getTaskById)
-//   .put(validateTask, updateTask)
-//   .delete(deleteTask);
+router.route('/:id')
+  .get(TasksController.getTaskById)
+//   .put(TasksController.validateTask, TasksController.updateTask)
+//   .delete(TasksController.deleteTask);
 
 export default router;

@@ -12,10 +12,14 @@ router
     .get(asyncHandler(ProjectsController.getAllProjects))
     .post(asyncHandler(ProjectsController.createProject));
 
-router
-    .route('/:id')
-    .get(ProjectsController.getProjectById);
+// router
+//     .route('/:id')
+//     .get(ProjectsController.getProjectById);
 //     .put(ProjectsController.validateProject, ProjectsController.updateProject)
 //     .delete(ProjectsController.deleteProject);
+
+router
+    .route('/:id')
+    .get(ProjectsController.getProjectWithTasks)
 
     export default router;

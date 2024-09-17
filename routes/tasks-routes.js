@@ -14,7 +14,7 @@ router.route('/')
 
 router.route('/:id')
   .get(TasksController.getTaskById)
+  .delete(TasksController.deleteTaskById);
 //   .put(TasksController.validateTask, TasksController.updateTask)
-//   .delete(TasksController.deleteTask);
 
 export default router;

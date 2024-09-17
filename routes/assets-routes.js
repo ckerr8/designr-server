@@ -14,7 +14,7 @@ router
 router
 .route('/:id')
   .get(AssetsController.getAssetById)
+  .delete(AssetsController.deleteAssetById);
 //   .putAssetsController.validateAsset, AssetsController.updateAsset)
-//   .delete(AssetsController.deleteAsset);
   
   export default router;

@@ -60,6 +60,37 @@ export const getAllProjects = async (req, res) => {
     }
   };
   
+
+  export const getProjectWithTasks = async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Fetch the project information
+      const projectDetails = await knex('projects')
+        .where({ id: id })
+        .first();
+  
+      if (!projectDetails) {
+        return res.status(404).json({ message: `Project with ID ${id} not found` });
+      }
+  
+      // Fetch tasks associated with the project
+      const tasks = await knex('tasks')
+        .where({ projects_id: id }) // This line is crucial
+        .select('*');
+  
+      // Combine project and tasks information
+      const projectWithTasks = {
+        ...projectDetails,
+        tasks: tasks
+      };
+  
+      res.json(projectWithTasks);
+    } catch (error) {
+      console.error('Error fetching project with tasks:', error);
+      res.status(500).json({ error: 'Error fetching project with tasks' });
+    }
+  };
 //   export {
 //     getAllClients
 //   };

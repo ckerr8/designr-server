@@ -32,6 +32,43 @@ export const getAllClients = async (req, res) => {
     }
   };
 
+  export const getClientWithAssetsAndProjects = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      // Fetch the client information
+      const clientDetails = await knex('clients')
+        .where({ id: id })
+        .first();
+  
+      if (!clientDetails) {
+        return res.status(404).json({ message: `Client with ID ${id} not found` });
+      }
+  
+      // Fetch assets associated with the client
+      const assets = await knex('assets')
+        .where({ clients_id: id })
+        .select('*');
+  
+      // Fetch projects associated with the client
+      const projects = await knex('projects')
+        .where({ clients_id: id })
+        .select('*');
+  
+      // Combine client, assets, and projects information
+      const clientWithAssetsAndProjects = {
+        ...clientDetails,
+        assets: assets,
+        projects: projects
+      };
+  
+      res.json(clientWithAssetsAndProjects);
+    } catch (error) {
+      console.error('Error fetching client with assets and projects:', error);
+      res.status(500).json({ error: 'Error fetching client with assets and projects' });
+    }
+  };
+
   export const createClient = async (req, res) => {
     try {
         const [newId] = await knex('clients').insert({

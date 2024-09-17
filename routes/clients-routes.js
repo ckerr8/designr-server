@@ -12,7 +12,7 @@ router.route('/')
   .post(asyncHandler(ClientsController.createClient));
 
 router.route('/:id')
-  .get(asyncHandler(ClientsController.getClient))
+  .get(asyncHandler(ClientsController.getClientWithAssetsAndProjects))
 //   .put(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.updateClient))
 //   .delete(asyncHandler(ClientsController.deleteClient));
 

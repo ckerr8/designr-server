@@ -9,12 +9,16 @@ const knex = initKnex(configuration);
 
 export const getAllProjects = async (req, res) => {
     try {
-      const projects = await knex('projects')
-      .select('*');
-      res.json(projects);
-    } catch (err) {
-      handleServerError(res, err, 'Error fetching clients');
-    }
+        const projects = await knex('projects')
+          .select(
+            'projects.*',
+            'clients.contact_name as client_contact_name'
+          )
+          .leftJoin('clients', 'projects.clients_id', 'clients.id');
+        res.json(projects);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch projects' });
+      }
   };
 
   export const getProjectById = async (req, res) => {

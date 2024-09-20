@@ -102,3 +102,73 @@ export const getAllAssets = async (req, res) => {
       res.status(500).json({ error: `Error deleting asset: ${error.message}` });
     }
   };
+
+  export const updateAsset = async (req, res) => {
+    const trx = await knex.transaction();
+
+    try {
+        const { id } = req.params;
+        const { asset_name, category, quantity, clients_id, tasks_id, status, local_image_path, remote_url } = req.body;
+
+        // Create updateData object with only allowed fields
+        const updateData = {
+            asset_name,
+            category,
+            quantity,
+            clients_id,
+            tasks_id,
+            status,
+            local_image_path,
+            remote_url
+        };
+
+        // Remove undefined fields
+        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+        // Check if the asset exists
+        const asset = await trx('assets')
+            .where({ id: id })
+            .first();
+
+        if (!asset) {
+            await trx.rollback();
+            return res.status(404).json({ message: `Asset with Id ${id} not found` });
+        }
+
+        // ... rest of your existing code for checking client and task relationships
+
+        // Update the asset
+        await trx('assets')
+            .where({ id: id })
+            .update(updateData);
+  
+      // If the task association is being removed, update the old task
+      if (asset.tasks_id && (!updateData.tasks_id || updateData.tasks_id !== asset.tasks_id)) {
+        await trx('tasks')
+          .where({ id: asset.tasks_id })
+          .update({ assets_id: null });
+      }
+  
+      // If a new task is being associated, update the new task
+      if (updateData.tasks_id && updateData.tasks_id !== asset.tasks_id) {
+        await trx('tasks')
+          .where({ id: updateData.tasks_id })
+          .update({ assets_id: id });
+      }
+  
+      // Fetch the updated asset
+     
+        // Fetch the updated asset
+        const updatedAsset = await trx('assets')
+            .where({ id: id })
+            .first();
+
+        await trx.commit();
+
+        res.status(200).json(updatedAsset);
+    } catch (error) {
+        await trx.rollback();
+        console.error('Error updating asset:', error);
+        res.status(500).json({ error: `Error updating asset: ${error.message}` });
+    }
+};

@@ -69,15 +69,72 @@ export const getAllClients = async (req, res) => {
     }
   };
 
+
   export const createClient = async (req, res) => {
     try {
-        const [newId] = await knex('clients').insert({
-            ...req.body,
-            id: uuid()
-    });
-        const newClient = await knex("clients").where({ id: newId });
+      const clientData = { ...req.body };
+      
+      // Set default status 
+      if (!clientData.status || !['active', 'inactive'].includes(clientData.status)) {
+        clientData.status = 'active';
+      }
+  
+      const newId = uuid();
+      await knex('clients').insert({
+        ...clientData,
+        id: newId
+      });
+  
+      const newClient = await knex("clients").where({ id: newId }).first();
+      
       res.status(201).json(newClient);
     } catch (err) {
-      handleServerError(res, err, 'Unable to create new client');
+      console.error('Unable to create new client:', err);
+      res.status(500).json({ error: 'Unable to create new client', details: err.message });
     }
   };
+
+  export const deleteClient = async (req, res) => {
+  const { id } = req.params;
+  
+  // Start a transaction to ensure data consistency
+  const trx = await knex.transaction();
+
+  try {
+    // Check if the client exists
+    const client = await trx('clients').where({ id }).first();
+    if (!client) {
+      await trx.rollback();
+      return res.status(404).json({ message: `Client with ID ${id} not found` });
+    }
+
+    // Check for associated assets
+    const associatedAssets = await trx('assets').where({ clients_id: id });
+    if (associatedAssets.length > 0) {
+
+      // Update assets to remove client association
+      await trx('assets').where({ clients_id: id }).update({ clients_id: null });
+    }
+
+    // Check for associated projects
+    const associatedProjects = await trx('projects').where({ clients_id: id });
+    if (associatedProjects.length > 0) {
+
+      // Update projects to remove client association
+      await trx('projects').where({ clients_id: id }).update({ clients_id: null });
+    }
+
+    // Delete the client
+    await trx('clients').where({ id }).del();
+
+    // Commit the transaction
+    await trx.commit();
+
+    res.json({ message: 'Client deleted successfully' });
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await trx.rollback();
+    console.error('Error deleting client:', error);
+    res.status(500).json({ error: 'Unable to delete client', details: error.message });
+  }
+};

@@ -14,6 +14,6 @@ router.route('/')
 router.route('/:id')
   .get(asyncHandler(ClientsController.getClientWithAssetsAndProjects))
 //   .put(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.updateClient))
-//   .delete(asyncHandler(ClientsController.deleteClient));
+  .delete(asyncHandler(ClientsController.deleteClient));
 
 export default router;

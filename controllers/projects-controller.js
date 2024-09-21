@@ -38,31 +38,38 @@ export const getAllProjects = async (req, res) => {
     }
 };
 
-  export const createProject = async (req, res) => {
-    try {
-      const projectData = { ...req.body };
-      
-      // Convert the deadline to a valid MySQL date format
-      if (projectData.deadline) {
-        const date = new Date(projectData.deadline);
-        if (isNaN(date.getTime())) {
-          throw new Error('Invalid date format');
-        }
-        projectData.deadline = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+export const createProject = async (req, res) => {
+  try {
+    const { project_name, description, deadline, price, clients_id, status } = req.body;
+    
+    const projectData = {
+      project_name,
+      description,
+      clients_id,
+      price: price ? parseFloat(price) : null
+    };
+    
+    // Convert the deadline to a valid MySQL date format
+    if (deadline) {
+      const date = new Date(deadline);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format');
       }
-  
-      const [newId] = await knex('projects').insert({
-        ...projectData,
-        id: uuid()
-      });
-  
-      const newProject = await knex("projects").where({ id: newId }).first();
-      res.status(201).json(newProject);
-    } catch (err) {
-      console.error('Unable to create new project:', err);
-      res.status(400).json({ error: 'Unable to create new project', details: err.message });
+      projectData.deadline = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
     }
-  };
+
+    const [newId] = await knex('projects').insert({
+      ...projectData,
+      id: uuid()
+    });
+
+    const newProject = await knex("projects").where({ id: newId }).first();
+    res.status(201).json(newProject);
+  } catch (err) {
+    console.error('Unable to create new project:', err);
+    res.status(400).json({ error: 'Unable to create new project', details: err.message });
+  }
+};
   
 
   export const getProjectWithTasks = async (req, res) => {

@@ -226,17 +226,3 @@ export const createTaskForProject = async (req, res) => {
       res.status(500).json({ error: 'Error updating project', details: error.message });
     }
   };
-
-//   export {
-//     getAllClients
-//   };
-  
-//   export const createClient = async (req, res) => {
-//     try {
-//       const id = uuid();
-//       const newClient = await knex('clients').where({ key: newId }).first();
-//       res.status(201).json(newClient);
-//     } catch (err) {
-//       handleServerError(res, err, 'Unable to create new client');
-//     }
-//   };

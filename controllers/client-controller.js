@@ -34,41 +34,52 @@ export const getAllClients = async (req, res) => {
 
   export const getClientWithAssetsAndProjects = async (req, res) => {
     try {
-      const { id } = req.params;
-  
-      // Fetch the client information
-      const clientDetails = await knex('clients')
-        .where({ id: id })
-        .first();
-  
-      if (!clientDetails) {
-        return res.status(404).json({ message: `Client with ID ${id} not found` });
-      }
-  
-      // Fetch assets associated with the client
-      const assets = await knex('assets')
-        .where({ clients_id: id })
-        .select('*');
-  
-      // Fetch projects associated with the client
-      const projects = await knex('projects')
-        .where({ clients_id: id })
-        .select('*');
-  
-      // Combine client, assets, and projects information
-      const clientWithAssetsAndProjects = {
-        ...clientDetails,
-        assets: assets,
-        projects: projects
-      };
-  
-      res.json(clientWithAssetsAndProjects);
-    } catch (error) {
-      console.error('Error fetching client with assets and projects:', error);
-      res.status(500).json({ error: 'Error fetching client with assets and projects' });
-    }
-  };
+        const { id } = req.params;
 
+        // Fetch the client information
+        const clientDetails = await knex('clients')
+            .where({ id: id })
+            .first();
+
+        if (!clientDetails) {
+            return res.status(404).json({ message: `Client with ID ${id} not found` });
+        }
+
+        // Fetch assets associated with the client
+        const assets = await knex('assets')
+            .where({ clients_id: id })
+            .select('*');
+
+        // Fetch projects associated with the client
+        const projects = await knex('projects')
+            .where({ clients_id: id })
+            .select('*');
+
+        // Fetch tasks for each project
+        const tasksPromises = projects.map(project =>
+            knex('tasks').where({ projects_id: project.id }).select('*')
+        );
+        const tasksResults = await Promise.all(tasksPromises);
+
+        // Combine tasks with their respective projects
+        const projectsWithTasks = projects.map((project, index) => ({
+            ...project,
+            tasks: tasksResults[index]
+        }));
+
+        // Combine client, assets, and projects information
+        const clientWithAssetsAndProjects = {
+            ...clientDetails,
+            assets: assets,
+            projects: projectsWithTasks
+        };
+
+        res.json(clientWithAssetsAndProjects);
+    } catch (error) {
+        console.error('Error fetching client with assets and projects:', error);
+        res.status(500).json({ error: 'Error fetching client with assets and projects' });
+    }
+};
 
   export const createClient = async (req, res) => {
     try {
@@ -93,6 +104,31 @@ export const getAllClients = async (req, res) => {
       res.status(500).json({ error: 'Unable to create new client', details: err.message });
     }
   };
+
+export const updateClient = async (req, res) => {
+  const trx = await knex.transaction();
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    // Update the asset in the database
+    await knex('clients')
+      .where({ id: id })
+      .update(updatedData);
+
+    // Fetch the updated asset
+    const updatedAsset = await knex('clients')
+    .where({ id: id })
+    .first();
+
+    await trx.commit();
+
+    res.status(200).json(updatedAsset);
+  } catch (error) {
+    console.error('Error updating client:', error);
+    res.status(500).json({ error: 'Error updating client' });
+  }
+};
 
   export const deleteClient = async (req, res) => {
   const { id } = req.params;

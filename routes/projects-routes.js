@@ -21,7 +21,8 @@ router
 router
     .route('/:id')
     .get(ProjectsController.getProjectWithTasks)
-    .delete(ProjectsController.deleteProjectById);
-
+    .delete(ProjectsController.deleteProjectById)
+    .put(ProjectsController.updateProject)
+    .post(ProjectsController.createTaskForProject);
 
     export default router;

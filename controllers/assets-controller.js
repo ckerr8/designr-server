@@ -34,25 +34,30 @@ export const getAllAssets = async (req, res) => {
 
   export const createAsset = async (req, res) => {
     try {
-      const assetData = { ...req.body };
+      const { asset_name, category, clients_id, quantity, remote_url, status, tasks_id } = req.body;
       
-      // Set default status if not provided
-      if (!assetData.status) {
-        assetData.status = 'active';
-      }
+      // Convert the current date to a format compatible with your database
+      const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' '); // Converts to 'YYYY-MM-DD HH:MM:SS'
   
-      const newId = uuid();
-      await knex('assets').insert({
-        ...assetData,
-        id: newId
-      });
+      const assetData = {
+        id: uuid(),
+        asset_name,
+        category,
+        clients_id,
+        quantity,
+        remote_url,
+        status,
+        tasks_id,
+        created_at: currentDateTime,
+        updated_at: currentDateTime
+      };
   
-      const newAsset = await knex("assets").where({ id: newId }).first();
-      
-      res.status(201).json(newAsset);
-    } catch (err) {
-      console.error('Unable to create new asset:', err);
-      res.status(500).json({ error: 'Unable to create new asset', details: err.message });
+      await knex('assets').insert(assetData);
+  
+      res.status(201).json({ message: 'Asset created successfully', asset: assetData });
+    } catch (error) {
+      console.error('Error creating asset:', error);
+      res.status(500).json({ error: 'Error creating asset', details: error.message });
     }
   };
 
@@ -71,16 +76,16 @@ export const getAllAssets = async (req, res) => {
         await trx.rollback();
         return res.status(404).json({ message: `Asset with Id ${id} not found` });
       }
-      // If there's a related task, proceed with deletion but return a warning
-      let warningMessage = null;
-      if (asset.tasks_id) {
-        warningMessage = `Asset is associated with a task (Task ID: ${asset.tasks_id}). The task will be updated.`;
+      // // If there's a related task, proceed with deletion but return a warning
+      // let warningMessage = null;
+      // if (asset.tasks_id) {
+      //   warningMessage = `Asset is associated with a task (Task ID: ${asset.tasks_id}). The task will be updated.`;
         
-        // Update the related task to remove the association
-        await trx('tasks')
-          .where({ id: asset.tasks_id })
-          .update({ assets_id: null });
-      }
+      //   // Update the related task to remove the association
+      //   await trx('tasks')
+      //     .where({ id: asset.tasks_id })
+      //     .update({ assets_id: null });
+      // }
   
       // Delete the asset
       await trx('assets')
@@ -92,7 +97,6 @@ export const getAllAssets = async (req, res) => {
       // Return success message along with any warning
       const responseMessage = {
         message: `Asset with Id ${id} has been deleted successfully`,
-        warning: warningMessage
       };
   
       res.status(200).json(responseMessage);

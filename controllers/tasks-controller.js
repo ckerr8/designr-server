@@ -43,6 +43,36 @@ export const getAllTasks = async (req, res) => {
     }
   };
 
+  export const updateTaskbyId = async (req, res) => {
+    const trx = await knex.transaction();
+    try {
+      const { id } = req.params;
+      const updatedBody = req.body;
+  
+      // Use trx instead of knex for transactional queries
+      const updatedRows = await trx('tasks')
+        .where({ id: id })
+        .update(updatedBody);
+  
+      if (updatedRows === 0) {
+        await trx.rollback();
+        return res.status(404).json({ message: `Task with Id ${id} not found` });
+      }
+      
+      const updatedTask = await trx('tasks')
+        .where({ id: id })
+        .first();
+  
+      await trx.commit();
+  
+      res.status(200).json(updatedTask);
+    } catch (error) {
+      await trx.rollback();
+      console.error('Error updating task:', error);
+      res.status(500).json({ error: 'Error updating task' });
+    }
+  };
+
   export const deleteTaskById = async (req, res) => {
     try {
       const { id } = req.params;
@@ -67,3 +97,4 @@ export const getAllTasks = async (req, res) => {
       res.status(500).json({ error: `Error deleting task: ${error.message}` });
     }
   };
+  

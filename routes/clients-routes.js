@@ -13,7 +13,7 @@ router.route('/')
 
 router.route('/:id')
   .get(asyncHandler(ClientsController.getClientWithAssetsAndProjects))
-//   .put(asyncHandler(ClientsController.validateClient), asyncHandler(ClientsController.updateClient))
+  .put(asyncHandler(ClientsController.updateClient))
   .delete(asyncHandler(ClientsController.deleteClient));
 
 export default router;

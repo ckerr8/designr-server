@@ -49,7 +49,7 @@ export const createProject = async (req, res) => {
       price: price ? parseFloat(price) : null
     };
     
-    // Convert the deadline to a valid MySQL date format
+    // Converts the deadline to a valid MySQL date format
     if (deadline) {
       const date = new Date(deadline);
       if (isNaN(date.getTime())) {
@@ -68,6 +68,39 @@ export const createProject = async (req, res) => {
   } catch (err) {
     console.error('Unable to create new project:', err);
     res.status(400).json({ error: 'Unable to create new project', details: err.message });
+  }
+};
+
+export const createTaskForProject = async (req, res) => {
+  try {
+    const { task_name, description, category, status, quantity } = req.body;
+    const projectid  = req.params.id; // Get project ID from route parameters
+
+    // Validate required fields
+    if (!task_name) {
+      throw new Error('Task name is required');
+    }
+
+    // Prepare task data
+    const taskData = {
+      id: uuid(),
+      task_name,
+      description: description || '',
+      category: category || 'General', // Default category if not provided
+      status: status || 'active',     // Default status if not provided
+      quantity: quantity ? parseInt(quantity, 10) : 1,
+      projects_id: projectid
+    };
+
+    // Insert the new task into the database
+    await knex('tasks').insert(taskData);
+
+    // Retrieve and return the newly created task
+    const newTask = await knex('tasks').where({ id: taskData.id }).first();
+    res.status(201).json(newTask);
+  } catch (err) {
+    console.error('Unable to create new task:', err);
+    res.status(400).json({ error: 'Unable to create new task', details: err.message });
   }
 };
   
@@ -148,6 +181,49 @@ export const createProject = async (req, res) => {
       await trx.rollback();
       console.error('Error deleting project:', error);
       res.status(500).json({ error: `Error deleting project: ${error.message}` });
+    }
+  };
+
+  export const updateProject = async (req, res) => {
+    const trx = await knex.transaction();
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
+  
+      // Convert deadline to MySQL date format if provided
+      if (updatedData.deadline) {
+        const date = new Date(updatedData.deadline);
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date format');
+        }
+        updatedData.deadline = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      }
+  
+      // Convert price to float if provided
+      if (updatedData.price) {
+        updatedData.price = parseFloat(updatedData.price);
+      }
+  
+      await trx('projects')
+        .where({ id: id })
+        .update(updatedData);
+  
+      const updatedProject = await trx('projects')
+        .where({ id: id })
+        .first();
+  
+      if (!updatedProject) {
+        await trx.rollback();
+        return res.status(404).json({ message: `Project with ID ${id} not found` });
+      }
+  
+      await trx.commit();
+  
+      res.status(200).json(updatedProject);
+    } catch (error) {
+      await trx.rollback();
+      console.error('Error updating project:', error);
+      res.status(500).json({ error: 'Error updating project', details: error.message });
     }
   };
 

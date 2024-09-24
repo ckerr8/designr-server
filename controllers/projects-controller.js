@@ -164,10 +164,10 @@ export const createTaskForProject = async (req, res) => {
           .update({ status: 'Available', tasks_id: null });
       }
   
-      // Update tasks associated with the project
+      // Delete tasks associated with the project
       await trx('tasks')
         .where({ projects_id: id })
-        .update({ projects_id: null, status: 'Unassigned' });
+        .del();
   
       // Delete the project
       await trx('projects')
